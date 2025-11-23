@@ -342,8 +342,8 @@ valid_econ <- valid_df %>%
                profit  = revenue - budget - pna_est)
 raw_cost <- median(valid_econ$pna_est, na.rm = TRUE)
 raw_gain <- median(valid_econ$profit[valid_econ$hit == "yes"], na.rm = TRUE)
-COST_PER_SEL_FLOOR <- 2e6
-GAIN_PER_TP_FLOOR  <- 4e6
+#COST_PER_SEL_FLOOR <- 2e6
+#GAIN_PER_TP_FLOOR  <- 4e6
 COST_PER_SEL <- max(raw_cost, COST_PER_SEL_FLOOR)
 GAIN_PER_TP <- max(raw_gain, GAIN_PER_TP_FLOOR)
 cat(sprintf(
@@ -1472,6 +1472,7 @@ readr::write_csv(top_genre_tau_2023, "top_genre_tau_2023.csv")
 readr::write_csv(top_tau_star_2023, "top_tau_star_2023.csv")
 
 # --------------------------- END OF FILE ---------------------
+
 
 
 
