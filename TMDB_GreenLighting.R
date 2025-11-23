@@ -1391,6 +1391,76 @@ p_genre_2023_br <- budget_vs_predrev_plot(top_genre_tau_2023, "Top‑5 — Genre
 p_tstar_2023_br <- budget_vs_predrev_plot(top_tau_star_2023,  "Top‑5 — Global τ* (Actual Budget vs Predicted Revenue) — 2023")
 p_genre_2023_br; p_tstar_2023_br
 
+
+#------------------------------Model Metrics Comaprison--------------------------
+summarize_best <- function(tuned_obj, model_name) {
+        tuned_obj %>%
+                collect_metrics() %>%
+                filter(.metric %in% c("roc_auc", "pr_auc")) %>%
+                group_by(.metric) %>%
+                slice_max(order_by = mean, n = 1, with_ties = FALSE) %>%
+                ungroup() %>%
+                transmute(
+                        Model     = model_name,
+                        Metric    = .metric,
+                        Score     = mean,
+                        StdErr    = std_err,
+                        Resamples = n
+                )
+}
+
+# ---- Build the tables -------------------------------------
+metrics_long <- bind_rows(
+        summarize_best(logit_tuned, "Logistic Regression"),
+        summarize_best(rf_tuned,    "Random Forest"),
+        summarize_best(xgb_c_tuned, "XGBoost")
+)
+
+metrics_wide <- metrics_long %>%
+        select(Model, Metric, Score) %>%
+        pivot_wider(names_from = Metric, values_from = Score)
+
+# ---- Inspect tables  ----------------------------
+print(metrics_long)
+print(metrics_wide)
+knitr::kable(metrics_wide, digits = 4, caption = "Best PR-AUC and ROC-AUC by Model")
+
+# ---- Bar plot with value labels ---------------------------------------
+# Long format for plotting: one row per (Model, Metric)
+plot_df <- metrics_long %>%
+        mutate(
+                Metric = case_when(
+                        Metric == "pr_auc"  ~ "PR-AUC",
+                        Metric == "roc_auc" ~ "ROC-AUC",
+                        TRUE ~ Metric
+                )
+        )
+
+ggplot(plot_df, aes(x = Model, y = Score, fill = Metric)) +
+        geom_col(position = position_dodge(width = 0.7), width = 0.6) +
+        geom_text(
+                aes(label = sprintf("%.3f", Score)),
+                position = position_dodge(width = 0.7),
+                vjust = -0.35,
+                size = 4,
+                color = "#0D253F"
+        ) +
+        scale_fill_manual(values = c("PR-AUC" = "#01B4E4", "ROC-AUC" = "#90CEA1")) +
+        scale_y_continuous(limits = c(0, 1.05), breaks = seq(0, 1, by = 0.1)) +
+        labs(
+                title = "Model Comparison: PR-AUC vs ROC-AUC (Best Tuned)",
+                x = NULL,
+                y = "AUC Score",
+                fill = NULL
+        ) +
+        theme_minimal(base_size = 13) +
+        theme(
+                plot.title.position = "plot",
+                legend.position = "top",
+                axis.text.x = element_text(angle = 0, hjust = 0.5)
+        )
+
+
 #-----------------------------CSV-----------------------------
                         
 readr::write_csv(policy_enb, "policy_enb_latest.csv")
@@ -1402,5 +1472,6 @@ readr::write_csv(top_genre_tau_2023, "top_genre_tau_2023.csv")
 readr::write_csv(top_tau_star_2023, "top_tau_star_2023.csv")
 
 # --------------------------- END OF FILE ---------------------
+
 
 
