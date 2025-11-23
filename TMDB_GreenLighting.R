@@ -1121,13 +1121,13 @@ genre_contrib <- pred_cls_test %>%
                         decision == "yes" & hit == "no"  ~ -COST_PER_SEL,
                         TRUE ~ 0
                 ), na.rm = TRUE), .groups = "drop"
-        ) %>% arrange(desc(ENB)) %>% slice_head(n = 15)
+        ) %>% arrange(desc(ENB)) %>% slice_head(n = 10)
 
 p_genre_enb <- ggplot(genre_contrib, aes(x = reorder(genres, ENB), y = ENB/1e6)) +
         geom_col(fill = brand_cols[["accent3"]]) +
         coord_flip() +
         geom_text(aes(label = scales::dollar(ENB)), hjust = -0.1, size = 3, color = brand_cols[["dark"]]) +
-        labs(title = "Top 15 Genres by ENB (Genre-τ policy, Test)", x = NULL, y = "ENB (Millions)") +
+        labs(title = "Top 10 Genres by ENB (Genre-τ policy, Test)", x = NULL, y = "ENB (Millions)") +
         theme_minimal(base_size = 14)
 print(p_genre_enb)
 
@@ -1402,4 +1402,5 @@ readr::write_csv(top_genre_tau_2023, "top_genre_tau_2023.csv")
 readr::write_csv(top_tau_star_2023, "top_tau_star_2023.csv")
 
 # --------------------------- END OF FILE ---------------------
+
 
