@@ -1391,4 +1391,15 @@ p_genre_2023_br <- budget_vs_predrev_plot(top_genre_tau_2023, "Top‑5 — Genre
 p_tstar_2023_br <- budget_vs_predrev_plot(top_tau_star_2023,  "Top‑5 — Global τ* (Actual Budget vs Predicted Revenue) — 2023")
 p_genre_2023_br; p_tstar_2023_br
 
+#-----------------------------CSV-----------------------------
+                        
+readr::write_csv(policy_enb, "policy_enb_latest.csv")
+readr::write_csv(enb_curve_valid, "enb_curve_valid_latest.csv")
+readr::write_csv(genre_contrib, "genre_contrib_latest.csv")
+readr::write_csv(sens_valid, "sens_valid_latest.csv")
+readr::write_csv(sens_test, "sens_test_latest.csv")
+readr::write_csv(top_genre_tau_2023, "top_genre_tau_2023.csv")
+readr::write_csv(top_tau_star_2023, "top_tau_star_2023.csv")
+
 # --------------------------- END OF FILE ---------------------
+
